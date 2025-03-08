@@ -317,39 +317,8 @@ local function teleport(cframe, tried)
                 task.wait(0.15);
                 dependencies.modules.character_util.OnJump();
             until vehicle_object.Seat.PlayerName.Value ~= Player.Name;
-            
-            -- Wait a bit to allow falling naturally
-            task.wait(0.5)
-            
-            -- Ensure character is fully grounded before continuing
-            local function is_grounded()
-                local ray = workspace:Raycast(Character.HumanoidRootPart.Position, Vector3.new(0, -10, 0), dependencies.variables.raycast_params)
-                return ray ~= nil
-            end
-            
-            -- Force character to fall if not on ground
-            local fall_timeout = 5
-            local elapsed_time = 0
-            
-            while not is_grounded() and elapsed_time < fall_timeout do
-                Character.HumanoidRootPart.Velocity = Vector3.new(0, -50, 0) -- Force downward movement
-                task.wait(0.2)
-                elapsed_time = elapsed_time + 0.2
-            end
-            
-            if not is_grounded() then
-                warn("Character is still stuck in the air after timeout. Attempting manual reset.")
-                Character.HumanoidRootPart.CFrame = workspace.SpawnLocation.CFrame -- Move to spawn to reset
-                task.wait(1) -- Wait for physics to stabilize
-            end
-            
-            -- Now that we are on the ground, find the nearest vehicle
-            local new_nearest_vehicle = utilities:get_nearest_vehicle({})
-            if new_nearest_vehicle then
-                local new_vehicle_object = new_nearest_vehicle.ValidRoot
-                movement:move_to_position(Character.HumanoidRootPart, new_vehicle_object.Seat.CFrame, dependencies.variables.player_speed, false, new_vehicle_object)
-            end
-            
+
+            print(vehicle_object.Seat.PlayerName.Value)
         end;
     else
         movement:move_to_position(Character.HumanoidRootPart, cframe, dependencies.variables.player_speed);
