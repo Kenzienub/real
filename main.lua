@@ -164,7 +164,7 @@ function movement:move_to_position(part, cframe, speed, car, target_vehicle, tri
 
         part.CFrame = CFrame.new(part.CFrame.X, y_level, part.CFrame.Z);
 
-        if target_vehicle and target_vehicle.Seat.Player.Value then
+        if target_vehicle and target_vehicle:FindFirstChild("Seat") and target_vehicle.Seat:FindFirstChild("Player")  and target_vehicle.Seat.Player.Value then
             table.insert(tried_vehicles, target_vehicle);
 
             local nearest_vehicle = utilities:get_nearest_vehicle(tried_vehicles);
