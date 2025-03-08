@@ -16,7 +16,7 @@ local Character = Player.Character or Player:WaitForChild("Character", 9e9);
 
 local dependencies = {
     variables = {
-        up_vector = Vector3.new(0, 500, 0),
+        up_vector = Vector3.new(0, 350, 0),
         raycast_params = RaycastParams.new(),
         path = pathfinding_service:CreatePath({WaypointSpacing = 3}),
         player_speed = 100, 
