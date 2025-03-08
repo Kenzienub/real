@@ -317,12 +317,25 @@ local function teleport(cframe, tried)
                 task.wait(0.15);
                 dependencies.modules.character_util.OnJump();
             until vehicle_object.Seat.PlayerName.Value ~= Player.Name;
-            
-            local new_nearest_vehicle = utilities:get_nearest_vehicle({})
-            if new_nearest_vehicle then
-                local new_vehicle_object = new_nearest_vehicle.ValidRoot
-                movement:move_to_position(Character.HumanoidRootPart, new_vehicle_object.Seat.CFrame, dependencies.variables.player_speed, false, new_vehicle_object)
-            end            
+            task.wait(0.5)
+            if workspace:Raycast(Character.HumanoidRootPart.Position, Vector3.new(0, -5, 0), dependencies.variables.raycast_params) then
+                local new_nearest_vehicle = utilities:get_nearest_vehicle({})
+                
+                if new_nearest_vehicle then
+                    local new_vehicle_object = new_nearest_vehicle.ValidRoot
+
+                    movement:move_to_position(Character.HumanoidRootPart, new_vehicle_object.Seat.CFrame, dependencies.variables.player_speed, false, new_vehicle_object)
+                    
+                    local enter_attempts = 0
+                    repeat
+                        task.wait(0.1)
+                        if new_nearest_vehicle.Callback then
+                            new_nearest_vehicle:Callback(true)
+                        end
+                        enter_attempts = enter_attempts + 1
+                    until enter_attempts >= 10 or (new_vehicle_object.Seat:FindFirstChild("PlayerName") and new_vehicle_object.Seat.PlayerName.Value == Player.Name)
+                end
+            end       
         end;
     else
         movement:move_to_position(Character.HumanoidRootPart, cframe, dependencies.variables.player_speed);
