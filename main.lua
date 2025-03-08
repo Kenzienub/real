@@ -34,7 +34,7 @@ local dependencies = {
     },
     helicopters = { Heli = true },
     motorcycles = { Volt = true },
-    free_vehicles = { Camaro = true },
+    free_vehicles = { Camaro = true, Jeep = true },
     unsupported_vehicles = { SWATVan = true },
     door_positions = { }    
 };
@@ -297,9 +297,14 @@ local function teleport(cframe, tried)
     end
 
     tried = tried or {}
-    local preferred_vehicles = { "Camaro" }
-    local nearest_vehicle = utilities:get_nearest_vehicle(tried)
-    local vehicle_object = nearest_vehicle and nearest_vehicle.ValidRoot or get_or_spawn_vehicle(preferred_vehicles)
+    local preferred_vehicles = { "Camaro", "Jeep" }
+
+    local vehicle_object = get_or_spawn_vehicle(preferred_vehicles)
+
+    if not vehicle_object then
+        local nearest_vehicle = utilities:get_nearest_vehicle(tried)
+        vehicle_object = nearest_vehicle and nearest_vehicle.ValidRoot
+    end
 
     if not vehicle_object then
         movement:move_to_position(Character.HumanoidRootPart, cframe, dependencies.variables.player_speed)
@@ -322,10 +327,13 @@ local function teleport(cframe, tried)
 
             repeat 
                 task.wait(0.1)
-                vehicle_object:Callback(true)
+                
+                if vehicle_object and vehicle_object.Seat and nearest_vehicle and nearest_vehicle.Callback then
+                    nearest_vehicle:Callback(true)
+                end
+            
                 enter_attempts = enter_attempts + 1
-            until enter_attempts == 10 or (vehicle_object.Seat:FindFirstChild("PlayerName") and vehicle_object.Seat.PlayerName.Value == Player.Name)
-
+            until enter_attempts == 10 or (vehicle_object.Seat:FindFirstChild("PlayerName") and vehicle_object.Seat.PlayerName.Value == Player.Name)            
             dependencies.variables.stopVelocity = false
 
             if vehicle_object.Seat:FindFirstChild("PlayerName") and vehicle_object.Seat.PlayerName.Value ~= Player.Name then
