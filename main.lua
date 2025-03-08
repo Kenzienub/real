@@ -177,7 +177,7 @@ end;
 dependencies.variables.raycast_params.FilterType = Enum.RaycastFilterType.Blacklist;
 dependencies.variables.raycast_params.FilterDescendantsInstances = { Character, workspace.Vehicles, workspace:FindFirstChild("Rain") };
 
-workspace.ChildAdded:Connect(function(child)
+game.workspace.ChildAdded:Connect(function(child)
     if child.Name == "Rain" then 
         table.insert(dependencies.variables.raycast_params.FilterDescendantsInstances, child);
     end;
