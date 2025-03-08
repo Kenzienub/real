@@ -16,10 +16,10 @@ local Character = Player.Character or Player:WaitForChild("Character", 9e9);
 
 local dependencies = {
     variables = {
-        up_vector = Vector3.new(0, 350, 0),
+        up_vector = Vector3.new(0, 500, 0),
         raycast_params = RaycastParams.new(),
         path = pathfinding_service:CreatePath({WaypointSpacing = 3}),
-        player_speed = 150, 
+        player_speed = 100, 
         vehicle_speed = 200,
         teleporting = false,
         stopVelocity = false
@@ -63,7 +63,6 @@ function utilities:get_nearest_vehicle(tried)
 
     local validVehicles = {}
 
-    -- Collect all valid vehicles
     for _, action in pairs(dependencies.modules.ui.CircleAction.Specs) do
         local vehicle = action.ValidRoot
 
@@ -95,14 +94,13 @@ function movement:move_to_position(part, cframe, speed, car, target_vehicle, tri
     local elevated_target = Vector3.new(target_pos.X, y_level, target_pos.Z)
     local playerRoot = Character and Character:FindFirstChild("HumanoidRootPart")
 
-    if not car and workspace:Raycast(part.Position, dependencies.variables.up_vector, dependencies.variables.raycast_params) then
-        movement:pathfind()
-        task.wait()
-    end
+    task.spawn(function()
+        if not car and workspace:Raycast(part.Position, dependencies.variables.up_vector, dependencies.variables.raycast_params) then
+            movement:pathfind()
+        end
+    end)
 
-    local reached = false
     local connection
-
     connection = run_service.Heartbeat:Connect(function(deltaTime)
         if not part or not playerRoot then
             connection:Disconnect()
@@ -113,7 +111,6 @@ function movement:move_to_position(part, cframe, speed, car, target_vehicle, tri
         local distance = direction.Magnitude
 
         if distance < 10 then
-            reached = true
             part.CFrame = CFrame.new(part.Position.X, target_pos.Y, part.Position.Z)
             part.Velocity = Vector3.zero
             connection:Disconnect()
@@ -122,7 +119,6 @@ function movement:move_to_position(part, cframe, speed, car, target_vehicle, tri
 
         local velocity_unit = direction.Unit * math.min(speed * deltaTime * 60, distance)
         part.Velocity = Vector3.new(velocity_unit.X, 0, velocity_unit.Z)
-
         part.CFrame = CFrame.new(part.Position.X, y_level, part.Position.Z)
 
         if target_vehicle and target_vehicle.Seat:FindFirstChild("Player") and target_vehicle.Seat.Player.Value then
@@ -130,13 +126,11 @@ function movement:move_to_position(part, cframe, speed, car, target_vehicle, tri
             table.insert(tried_vehicles, target_vehicle)
 
             local nearest_vehicle = utilities:get_nearest_vehicle(tried_vehicles)
-            if nearest_vehicle and nearest_vehicle.ValidRoot then
+            if nearest_vehicle and nearest_vehicle:FindFirstChild("ValidRoot") and nearest_vehicle.ValidRoot:FindFirstChild("Seat") then
                 movement:move_to_position(playerRoot, nearest_vehicle.ValidRoot.Seat.CFrame, 135, false, nearest_vehicle.ValidRoot, tried_vehicles)
             end
         end
     end)
-
-    repeat task.wait() until reached
 end
 
 --// raycast filter
