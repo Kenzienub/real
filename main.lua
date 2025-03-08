@@ -292,8 +292,7 @@ local function teleport(cframe, tried)
 
                 local enter_attempts = 1;
 
-                repeat 
-                    task.wait(0.1)
+                repeat task.wait(0.1)
                     
                     if nearest_vehicle and nearest_vehicle.Callback then
                         nearest_vehicle:Callback(true)
@@ -311,14 +310,14 @@ local function teleport(cframe, tried)
                 end;
             end;
 
-            movement:move_to_position(vehicle_object.Engine, cframe, dependencies.variables.vehicle_speed, true);
+            if vehicle_object.Seat.PlayerName.Value == Player.Name then
+                movement:move_to_position(vehicle_object.Engine, cframe, dependencies.variables.vehicle_speed, true);
+            end
 
             repeat
                 task.wait(0.15);
                 dependencies.modules.character_util.OnJump();
             until vehicle_object.Seat.PlayerName.Value ~= Player.Name;
-
-            return teleport;
         end;
     else
         movement:move_to_position(Character.HumanoidRootPart, cframe, dependencies.variables.player_speed);
