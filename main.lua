@@ -81,7 +81,7 @@ function utilities:get_nearest_vehicle(tried)
             and (dependencies.modules.store._state.garageOwned.Vehicles[vehicle.Name] or dependencies.free_vehicles[vehicle.Name])
             and not vehicle.Seat.Player.Value
             and not workspace:Raycast(vehicle.Seat.Position, dependencies.variables.up_vector, dependencies.variables.raycast_params)
-            and not utilities:is_vehicle_locked(vehicle) -- Check if the vehicle is not locked
+            and not utilities:is_vehicle_locked(vehicle)
         then
             local magnitude = (vehicle.Seat.Position - playerPosition).Magnitude
             table.insert(validVehicles, { action = action, magnitude = magnitude })
@@ -92,6 +92,7 @@ function utilities:get_nearest_vehicle(tried)
 
     return validVehicles[1] and validVehicles[1].action or nil
 end
+
 
 --// function to pathfind to a position with no collision above
 
@@ -269,6 +270,44 @@ end);
 
 --// main teleport function (not returning a new function directly because of recursion)
 
+local function DistanceXZ(pos1, pos2)
+    return (Vector3.new(pos1.X, 0, pos1.Z) - Vector3.new(pos2.X, 0, pos2.Z)).Magnitude
+end
+
+local function LagBackCheck(part)
+    local ShouldStop = false
+    local OldPosition = part.Position
+    local LaggedBack = false
+
+    local Signal = part:GetPropertyChangedSignal("CFrame"):Connect(function()
+        local CurrentPosition = part.Position
+
+        if DistanceXZ(CurrentPosition, OldPosition) > 7 then
+            LaggedBack = true
+            task.delay(0.2, function()
+                LaggedBack = false
+            end)
+        end
+    end)
+
+    task.spawn(function()
+        while part and ShouldStop == false do
+            OldPosition = part.Position
+            task.wait()
+        end
+    end)
+
+    return {
+        Stop = function()
+            ShouldStop = true
+            Signal:Disconnect()
+        end,
+        IsLaggedBack = function()
+            return LaggedBack
+        end
+    }
+end
+
 local function teleport(cframe, tried)
     local relative_position = (cframe.Position - Character.HumanoidRootPart.Position);
     local target_distance = relative_position.Magnitude;
@@ -277,6 +316,8 @@ local function teleport(cframe, tried)
         Character.HumanoidRootPart.CFrame = cframe; 
         return;
     end; 
+
+    local lagCheck = LagBackCheck(Character.HumanoidRootPart)
 
     local tried = tried or { };
     local nearest_vehicle = utilities:get_nearest_vehicle(tried);
@@ -288,7 +329,6 @@ local function teleport(cframe, tried)
     local vehicle_object = nearest_vehicle and nearest_vehicle.ValidRoot;
 
     if utilities:is_vehicle_locked(vehicle_object) then
-        print("Vehicle is locked, cannot teleport.")
         return;
     end
 
@@ -332,6 +372,12 @@ local function teleport(cframe, tried)
             repeat
                 task.wait(0.15);
                 dependencies.modules.character_util.OnJump();
+
+                if lagCheck.IsLaggedBack() then
+                    teleport(cframe, tried)
+                    return
+                end
+
             until vehicle_object.Seat.PlayerName.Value ~= Player.Name;
         end;
     else
@@ -340,5 +386,7 @@ local function teleport(cframe, tried)
 
     task.wait(0.5);
     dependencies.variables.teleporting = false;
+    lagCheck.Stop()
 end;
+
 return teleport;
