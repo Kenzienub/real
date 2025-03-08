@@ -322,10 +322,10 @@ local function get_outside_position()
 end
 
 local function teleport(cframe, tried) -- unoptimized
-    local relative_position = (cframe.Position - player.Character.HumanoidRootPart.Position);
+    local relative_position = (cframe.Position - Character.HumanoidRootPart.Position);
     local target_distance = relative_position.Magnitude;
 
-    if target_distance <= 20 and not workspace:Raycast(player.Character.HumanoidRootPart.Position, relative_position.Unit * target_distance, dependencies.variables.raycast_params) then 
+    if target_distance <= 20 and not workspace:Raycast(Character.HumanoidRootPart.Position, relative_position.Unit * target_distance, dependencies.variables.raycast_params) then 
         player.Character.HumanoidRootPart.CFrame = cframe; 
         
         return;
@@ -343,7 +343,7 @@ local function teleport(cframe, tried) -- unoptimized
     dependencies.variables.teleporting = true;
 
     if vehicle_object then 
-        local vehicle_distance = (vehicle_object.Seat.Position - player.Character.HumanoidRootPart.Position).Magnitude;
+        local vehicle_distance = (vehicle_object.Seat.Position - Character.HumanoidRootPart.Position).Magnitude;
 
         if target_distance < vehicle_distance then
             movement:move_to_position(player.Character.HumanoidRootPart, cframe, dependencies.variables.player_speed);
@@ -380,7 +380,7 @@ local function teleport(cframe, tried) -- unoptimized
             until vehicle_object.Seat.PlayerName.Value ~= Player.Name;
         end;
     else
-        movement:move_to_position(player.Character.HumanoidRootPart, cframe, dependencies.variables.player_speed);
+        movement:move_to_position(Character.HumanoidRootPart, cframe, dependencies.variables.player_speed);
     end;
 
     task.wait(0.5);
