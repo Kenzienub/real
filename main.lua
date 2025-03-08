@@ -87,51 +87,54 @@ end
 --// function to pathfind to a position with no collision above
 
 function movement:pathfind(tried)
-    local distance = math.huge;
-    local nearest;
+    tried = tried or {}
+    local nearest, distance = nil, math.huge
 
-    local tried = tried or { };
-    
-    for index, value in next, dependencies.door_positions do
-        if not table.find(tried, value) then
-            local magnitude = (value.position - Character.HumanoidRootPart.Position).Magnitude;
-            
-            if magnitude < distance then 
-                distance = magnitude;
-                nearest = value;
-            end;
-        end;
-    end;
+    for _, door in ipairs(dependencies.door_positions) do
+        if not table.find(tried, door) then
+            local magnitude = (door.position - Character.HumanoidRootPart.Position).Magnitude
+            if magnitude < distance then
+                distance = magnitude
+                nearest = door
+            end
+        end
+    end
 
-    table.insert(tried, nearest);
+    if not nearest then
+        return
+    end
 
-    utilities:toggle_door_collision(nearest.instance, false);
+    table.insert(tried, nearest)
 
-    local path = dependencies.variables.path;
-    path:ComputeAsync(Character.HumanoidRootPart.Position, nearest.position);
 
-    if path.Status == Enum.PathStatus.Success then -- if path making is successful
-        local waypoints = path:GetWaypoints();
+    utilities:toggle_door_collision(nearest.instance, false)
 
-        for index = 1, #waypoints do 
-            local waypoint = waypoints[index];
-            
-            Character.HumanoidRootPart.CFrame = CFrame.new(waypoint.Position + Vector3.new(0, 2.5, 0)); -- walking movement is less optimal
+    local path = dependencies.variables.path
+    local success, err = pcall(function()
+        path:ComputeAsync(Character.HumanoidRootPart.Position, nearest.position)
+    end)
 
-            if not workspace:Raycast(Character.HumanoidRootPart.Position, dependencies.variables.up_vector, dependencies.variables.raycast_params) then -- if there is nothing above the player
-                utilities:toggle_door_collision(nearest.instance, true);
+    if not success or path.Status ~= Enum.PathStatus.Success then
+        warn("⚠️ Pathfinding failed: " .. (err or "Invalid path"))
+        utilities:toggle_door_collision(nearest.instance, true)
+        return movement:pathfind(tried)
+    end
 
-                return;
-            end;
+    local waypoints = path:GetWaypoints()
+    for _, waypoint in ipairs(waypoints) do
+        Character.Humanoid:MoveTo(waypoint.Position + Vector3.new(0, 1.5, 0))
+        Character.Humanoid.MoveToFinished:Wait()
 
-            task.wait(0.05);
-        end;
-    end;
+        if not workspace:Raycast(Character.HumanoidRootPart.Position, dependencies.variables.up_vector, dependencies.variables.raycast_params) then
+            utilities:toggle_door_collision(nearest.instance, true)
+            return
+        end
+    end
 
-    utilities:toggle_door_collision(nearest.instance, true);
+    utilities:toggle_door_collision(nearest.instance, true)
 
-    movement:pathfind(tried);
-end;
+    movement:pathfind(tried)
+end
 
 --// function to interpolate characters position to a position
 
