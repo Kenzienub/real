@@ -1,3 +1,5 @@
+---@diagnostic disable: undefined-global, lowercase-global, unused-function, unused-local, empty-block, unbalanced-assignments, deprecated, undefined-field, code-after-break, redundant-parameter
+
 --[[
     Notes: 
 
@@ -255,30 +257,19 @@ end;
 
 local RagdollModule = require(game:GetService("ReplicatedStorage").Module.AlexRagdoll)
 
-local oldRagdoll = RagdollModule.Ragdoll
-local oldUnragdoll = RagdollModule.Unragdoll
-local oldIsRagdoll = RagdollModule.IsRagdoll
-
-RagdollModule.Ragdoll = function(character)
+local function CustomRagdoll(method, ...)
     if dependencies.variables.teleporting then
+        if method == "IsRagdoll" then
+            return false
+        end
         return
     end
-    return oldRagdoll(character)
+    return RagdollModule[method](...)
 end
 
-RagdollModule.Unragdoll = function(character)
-    if dependencies.variables.teleporting then
-        return
-    end
-    return oldUnragdoll(character)
-end
-
-RagdollModule.IsRagdoll = function(player)
-    if dependencies.variables.teleporting then
-        return false
-    end
-    return oldIsRagdoll(player)
-end
+RagdollModule.Ragdoll = function(...) return CustomRagdoll("Ragdoll", ...) end
+RagdollModule.Unragdoll = function(...) return CustomRagdoll("Unragdoll", ...) end
+RagdollModule.IsRagdoll = function(...) return CustomRagdoll("IsRagdoll", ...) end
 
 --// anti skydive
 
