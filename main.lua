@@ -84,6 +84,55 @@ function utilities:get_nearest_vehicle(tried)
     return validVehicles[1] and validVehicles[1].action or nil
 end
 
+--// function to pathfind to a position with no collision above
+
+function movement:pathfind(tried)
+    local distance = math.huge;
+    local nearest;
+
+    local tried = tried or { };
+    
+    for index, value in next, dependencies.door_positions do -- find the nearest position in our list of positions without collision above
+        if not table.find(tried, value) then
+            local magnitude = (value.position - player.Character.HumanoidRootPart.Position).Magnitude;
+            
+            if magnitude < distance then 
+                distance = magnitude;
+                nearest = value;
+            end;
+        end;
+    end;
+
+    table.insert(tried, nearest);
+
+    utilities:toggle_door_collision(nearest.instance, false);
+
+    local path = dependencies.variables.path;
+    path:ComputeAsync(player.Character.HumanoidRootPart.Position, nearest.position);
+
+    if path.Status == Enum.PathStatus.Success then -- if path making is successful
+        local waypoints = path:GetWaypoints();
+
+        for index = 1, #waypoints do 
+            local waypoint = waypoints[index];
+            
+            player.Character.HumanoidRootPart.CFrame = CFrame.new(waypoint.Position + Vector3.new(0, 2.5, 0)); -- walking movement is less optimal
+
+            if not workspace:Raycast(player.Character.HumanoidRootPart.Position, dependencies.variables.up_vector, dependencies.variables.raycast_params) then -- if there is nothing above the player
+                utilities:toggle_door_collision(nearest.instance, true);
+
+                return;
+            end;
+
+            task.wait(0.05);
+        end;
+    end;
+
+    utilities:toggle_door_collision(nearest.instance, true);
+
+    movement:pathfind(tried);
+end;
+
 --// function to interpolate characters position to a position
 
 function movement:move_to_position(part, cframe, speed, car, target_vehicle, tried_vehicles)
@@ -182,25 +231,7 @@ end;
 
 --// no fall damage or ragdoll
 
-local RagdollModule = require(game:GetService("ReplicatedStorage").Module.AlexRagdoll)
 
-if not dependencies or not dependencies.variables then
-    return;
-end
-
-local function CustomRagdoll(method, ...)
-    if dependencies.variables.teleporting then
-        if method == "IsRagdoll" then
-            return false
-        end
-        return nil
-    end
-    return RagdollModule[method](...)
-end
-
-RagdollModule.Ragdoll = function(...) return CustomRagdoll("Ragdoll", ...) end
-RagdollModule.Unragdoll = function(...) return CustomRagdoll("Unragdoll", ...) end
-RagdollModule.IsRagdoll = function(...) return CustomRagdoll("IsRagdoll", ...) end
 
 --// anti skydive
 
