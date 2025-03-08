@@ -87,54 +87,51 @@ end
 --// function to pathfind to a position with no collision above
 
 function movement:pathfind(tried)
-    tried = tried or {}
-    local nearest, distance = nil, math.huge
+    local distance = math.huge;
+    local nearest;
 
-    for _, door in ipairs(dependencies.door_positions) do
-        if not table.find(tried, door) then
-            local magnitude = (door.position - Character.HumanoidRootPart.Position).Magnitude
-            if magnitude < distance then
-                distance = magnitude
-                nearest = door
-            end
-        end
-    end
+    local tried = tried or { };
+    
+    for index, value in next, dependencies.door_positions do
+        if not table.find(tried, value) then
+            local magnitude = (value.position - Character.HumanoidRootPart.Position).Magnitude;
+            
+            if magnitude < distance then 
+                distance = magnitude;
+                nearest = value;
+            end;
+        end;
+    end;
 
-    if not nearest then
-        return
-    end
+    table.insert(tried, nearest);
 
-    table.insert(tried, nearest)
+    utilities:toggle_door_collision(nearest.instance, false);
 
+    local path = dependencies.variables.path;
+    path:ComputeAsync(Character.HumanoidRootPart.Position, nearest.position);
 
-    utilities:toggle_door_collision(nearest.instance, false)
+    if path.Status == Enum.PathStatus.Success then -- if path making is successful
+        local waypoints = path:GetWaypoints();
 
-    local path = dependencies.variables.path
-    local success, err = pcall(function()
-        path:ComputeAsync(Character.HumanoidRootPart.Position, nearest.position)
-    end)
+        for index = 1, #waypoints do 
+            local waypoint = waypoints[index];
+            
+            Character.HumanoidRootPart.CFrame = CFrame.new(waypoint.Position + Vector3.new(0, 2.5, 0)); -- walking movement is less optimal
 
-    if not success or path.Status ~= Enum.PathStatus.Success then
-        warn("⚠️ Pathfinding failed: " .. (err or "Invalid path"))
-        utilities:toggle_door_collision(nearest.instance, true)
-        return movement:pathfind(tried)
-    end
+            if not workspace:Raycast(Character.HumanoidRootPart.Position, dependencies.variables.up_vector, dependencies.variables.raycast_params) then -- if there is nothing above the player
+                utilities:toggle_door_collision(nearest.instance, true);
 
-    local waypoints = path:GetWaypoints()
-    for _, waypoint in ipairs(waypoints) do
-        Character.Humanoid:MoveTo(waypoint.Position + Vector3.new(0, 1.5, 0))
-        Character.Humanoid.MoveToFinished:Wait()
+                return;
+            end;
 
-        if not workspace:Raycast(Character.HumanoidRootPart.Position, dependencies.variables.up_vector, dependencies.variables.raycast_params) then
-            utilities:toggle_door_collision(nearest.instance, true)
-            return
-        end
-    end
+            task.wait(0.05);
+        end;
+    end;
 
-    utilities:toggle_door_collision(nearest.instance, true)
+    utilities:toggle_door_collision(nearest.instance, true);
 
-    movement:pathfind(tried)
-end
+    movement:pathfind(tried);
+end;
 
 --// function to interpolate characters position to a position
 
@@ -146,7 +143,7 @@ function movement:move_to_position(part, cframe, speed, car, target_vehicle, tri
         task.wait(0.5);
     end;
     
-    local y_level = 350;
+    local y_level = 500;
     local higher_position = Vector3.new(vector_position.X, y_level, vector_position.Z);
 
     repeat
@@ -164,7 +161,7 @@ function movement:move_to_position(part, cframe, speed, car, target_vehicle, tri
             local vehicle_object = nearest_vehicle and nearest_vehicle.ValidRoot;
 
             if vehicle_object then 
-                movement:move_to_position(Character.HumanoidRootPart, vehicle_object.Seat.CFrame, 100, false, vehicle_object);
+                movement:move_to_position(Character.HumanoidRootPart, vehicle_object.Seat.CFrame, 135, false, vehicle_object);
             end;
 
             return;
