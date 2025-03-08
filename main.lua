@@ -259,6 +259,14 @@ end);
 
 --// spawn vehicle
 
+function is_inside()
+    local hrp = Character.HumanoidRootPart
+    local ray_direction = Vector3.new(0, 50, 0)
+    local result = workspace:Raycast(hrp.Position, ray_direction)
+
+    return result ~= nil
+end
+
 local function get_or_spawn_vehicle(preferred_vehicles, tried)
     tried = tried or {}
 
@@ -304,9 +312,29 @@ end
 
 --// main teleport function (not returning a new function directly because of recursion)
 
+local function is_inside()
+    local hrp = Character.HumanoidRootPart
+    local ray_direction = Vector3.new(0, 50, 0)
+    local result = workspace:Raycast(hrp.Position, ray_direction)
+
+    return result ~= nil
+end
+
+local function get_outside_position()
+    local hrp = Character.HumanoidRootPart
+    return hrp.Position + Vector3.new(10, 0, 10)
+end
+
 local function teleport(cframe, tried)
     local relative_position = (cframe.Position - Character.HumanoidRootPart.Position)
     local target_distance = relative_position.Magnitude
+
+    if is_inside() then
+        local outside_position = get_outside_position()
+        movement:move_to_position(Character.HumanoidRootPart, CFrame.new(outside_position), dependencies.variables.player_speed)
+        
+        repeat task.wait(0.5) until not is_inside()
+    end
 
     if target_distance <= 20 and not workspace:Raycast(Character.HumanoidRootPart.Position, relative_position.Unit * target_distance, dependencies.variables.raycast_params) then
         Character.HumanoidRootPart.CFrame = cframe
