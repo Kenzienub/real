@@ -110,7 +110,7 @@ function movement:pathfind(tried)
     local path = dependencies.variables.path;
     path:ComputeAsync(Character.HumanoidRootPart.Position, nearest.position);
 
-    if path.Status == Enum.PathStatus.Success then -- if path making is successful
+    if path.Status == Enum.PathStatus.Success then
         local waypoints = path:GetWaypoints();
 
         for index = 1, #waypoints do 
