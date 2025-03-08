@@ -257,16 +257,24 @@ end;
 
 local RagdollModule = require(game:GetService("ReplicatedStorage").Module.AlexRagdoll)
 
+-- Ensure dependencies and variables exist
+if not dependencies or not dependencies.variables then
+    warn("⚠️ Dependencies or variables are missing!")
+    return
+end
+
+-- Check if teleporting is active before calling any ragdoll function
 local function CustomRagdoll(method, ...)
     if dependencies.variables.teleporting then
         if method == "IsRagdoll" then
-            return false
+            return false -- Prevents ragdoll status
         end
-        return
+        return nil -- Avoids calling the original function
     end
-    return RagdollModule[method](...)
+    return RagdollModule[method](...) -- Call the original function when teleporting is false
 end
 
+-- Overriding Ragdoll functions
 RagdollModule.Ragdoll = function(...) return CustomRagdoll("Ragdoll", ...) end
 RagdollModule.Unragdoll = function(...) return CustomRagdoll("Unragdoll", ...) end
 RagdollModule.IsRagdoll = function(...) return CustomRagdoll("IsRagdoll", ...) end
