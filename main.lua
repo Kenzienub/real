@@ -253,14 +253,34 @@ end;
 
 --// no fall damage or ragdoll 
 
-local old_is_point_in_tag = dependencies.modules.player_utils.isPointInTag;
-dependencies.modules.player_utils.isPointInTag = function(point, tag)
-    if dependencies.variables.teleporting and tag == "NoRagdoll" or tag == "NoFallDamage" then
-        return true;
-    end;
-    
-    return old_is_point_in_tag(point, tag);
-end;
+local RagdollModule = require(game:GetService("ReplicatedStorage").Module.AlexRagdoll)
+
+local oldRagdoll = RagdollModule.Ragdoll
+local oldUnragdoll = RagdollModule.Unragdoll
+local oldIsRagdoll = RagdollModule.IsRagdoll
+
+RagdollModule.Ragdoll = function(character)
+    if dependencies.variables.teleporting then
+        return
+    end
+    return oldRagdoll(character)
+end
+
+RagdollModule.Unragdoll = function(character)
+    if dependencies.variables.teleporting then
+        return
+    end
+    return oldUnragdoll(character)
+end
+
+RagdollModule.IsRagdoll = function(player)
+    if dependencies.variables.teleporting then
+        return false
+    end
+    return oldIsRagdoll(player)
+end
+
+return RagdollModule
 
 --// anti skydive
 
