@@ -318,7 +318,7 @@ local function teleport(cframe, tried)
                 dependencies.modules.character_util.OnJump();
             until vehicle_object.Seat.PlayerName.Value ~= Player.Name;
 
-            print(vehicle_object.Seat.PlayerName.Value)
+            return teleport;
         end;
     else
         movement:move_to_position(Character.HumanoidRootPart, cframe, dependencies.variables.player_speed);
