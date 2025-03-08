@@ -92,9 +92,9 @@ function movement:pathfind(tried)
 
     local tried = tried or { };
     
-    for index, value in next, dependencies.door_positions do -- find the nearest position in our list of positions without collision above
+    for index, value in next, dependencies.door_positions do
         if not table.find(tried, value) then
-            local magnitude = (value.position - player.Character.HumanoidRootPart.Position).Magnitude;
+            local magnitude = (value.position - Character.HumanoidRootPart.Position).Magnitude;
             
             if magnitude < distance then 
                 distance = magnitude;
@@ -108,7 +108,7 @@ function movement:pathfind(tried)
     utilities:toggle_door_collision(nearest.instance, false);
 
     local path = dependencies.variables.path;
-    path:ComputeAsync(player.Character.HumanoidRootPart.Position, nearest.position);
+    path:ComputeAsync(Character.HumanoidRootPart.Position, nearest.position);
 
     if path.Status == Enum.PathStatus.Success then -- if path making is successful
         local waypoints = path:GetWaypoints();
@@ -116,9 +116,9 @@ function movement:pathfind(tried)
         for index = 1, #waypoints do 
             local waypoint = waypoints[index];
             
-            player.Character.HumanoidRootPart.CFrame = CFrame.new(waypoint.Position + Vector3.new(0, 2.5, 0)); -- walking movement is less optimal
+            Character.HumanoidRootPart.CFrame = CFrame.new(waypoint.Position + Vector3.new(0, 2.5, 0)); -- walking movement is less optimal
 
-            if not workspace:Raycast(player.Character.HumanoidRootPart.Position, dependencies.variables.up_vector, dependencies.variables.raycast_params) then -- if there is nothing above the player
+            if not workspace:Raycast(Character.HumanoidRootPart.Position, dependencies.variables.up_vector, dependencies.variables.raycast_params) then -- if there is nothing above the player
                 utilities:toggle_door_collision(nearest.instance, true);
 
                 return;
@@ -161,7 +161,7 @@ function movement:move_to_position(part, cframe, speed, car, target_vehicle, tri
             local vehicle_object = nearest_vehicle and nearest_vehicle.ValidRoot;
 
             if vehicle_object then 
-                movement:move_to_position(player.Character.HumanoidRootPart, vehicle_object.Seat.CFrame, 135, false, vehicle_object);
+                movement:move_to_position(Character.HumanoidRootPart, vehicle_object.Seat.CFrame, 135, false, vehicle_object);
             end;
 
             return;
@@ -183,7 +183,7 @@ workspace.ChildAdded:Connect(function(child)
     end;
 end);
 
-Player.CharacterAdded:Connect(function(character)
+CharacterAdded:Connect(function(character)
     table.insert(dependencies.variables.raycast_params.FilterDescendantsInstances, character);
 end);
 
