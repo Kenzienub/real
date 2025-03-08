@@ -270,12 +270,11 @@ end
 local function get_or_spawn_vehicle(preferred_vehicles, tried)
     tried = tried or {}
 
-    -- Check if player is already in a vehicle before spawning
-    if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
-        local current_vehicle = player.Character.HumanoidRootPart.Parent
+    if Character and Character:FindFirstChild("HumanoidRootPart") then
+        local current_vehicle = Character.HumanoidRootPart.Parent
         if current_vehicle and current_vehicle:FindFirstChild("Seat") then
             if current_vehicle.Seat:FindFirstChild("Player") and current_vehicle.Seat.Player.Value == player then
-                return current_vehicle -- Already in a vehicle, no need to spawn
+                return current_vehicle
             end
         end
     end
