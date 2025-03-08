@@ -183,7 +183,7 @@ workspace.ChildAdded:Connect(function(child)
     end;
 end);
 
-CharacterAdded:Connect(function(character)
+Player.CharacterAdded:Connect(function(character)
     table.insert(dependencies.variables.raycast_params.FilterDescendantsInstances, character);
 end);
 
