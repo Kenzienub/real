@@ -273,7 +273,7 @@ local function get_or_spawn_vehicle(preferred_vehicles, tried)
     if Character and Character:FindFirstChild("HumanoidRootPart") then
         local current_vehicle = Character.HumanoidRootPart.Parent
         if current_vehicle and current_vehicle:FindFirstChild("Seat") then
-            if current_vehicle.Seat:FindFirstChild("Player") and current_vehicle.Seat.Player.Value == player then
+            if current_vehicle.Seat:FindFirstChild("Player") and current_vehicle.Seat.Player.Value == Player then
                 return current_vehicle
             end
         end
@@ -308,19 +308,6 @@ end
 
 --// main teleport function (not returning a new function directly because of recursion)
 
-local function is_inside()
-    local hrp = Character.HumanoidRootPart
-    local ray_direction = Vector3.new(0, 50, 0)
-    local result = workspace:Raycast(hrp.Position, ray_direction)
-
-    return result ~= nil
-end
-
-local function get_outside_position()
-    local hrp = Character.HumanoidRootPart
-    return hrp.Position + Vector3.new(10, 0, 10)
-end
-
 local function teleport(cframe, tried)
     local relative_position = (cframe.Position - Character.HumanoidRootPart.Position);
     local target_distance = relative_position.Magnitude;
@@ -348,7 +335,7 @@ local function teleport(cframe, tried)
         if target_distance < vehicle_distance then
             movement:move_to_position(Character.HumanoidRootPart, cframe, dependencies.variables.player_speed);
         else 
-            if vehicle_object.Seat.PlayerName.Value ~= player.Name then
+            if vehicle_object.Seat.PlayerName.Value ~= Player.Name then
                 movement:move_to_position(Character.HumanoidRootPart, vehicle_object.Seat.CFrame, dependencies.variables.player_speed, false, vehicle_object, tried);
 
                 dependencies.variables.stopVelocity = true;
