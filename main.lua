@@ -16,7 +16,7 @@ local Character = Player.Character or Player:WaitForChild("Character", 9e9);
 
 local dependencies = {
     variables = {
-        up_vector = Vector3.new(0, 350, 0),
+        up_vector = Vector3.new(0, 500, 0),
         raycast_params = RaycastParams.new(),
         path = pathfinding_service:CreatePath({WaypointSpacing = 3}),
         player_speed = 100, 
@@ -146,7 +146,7 @@ function movement:move_to_position(part, cframe, speed, car, target_vehicle, tri
         task.wait(0.5);
     end;
     
-    local y_level = 500;
+    local y_level = 350;
     local higher_position = Vector3.new(vector_position.X, y_level, vector_position.Z);
 
     repeat
@@ -164,7 +164,7 @@ function movement:move_to_position(part, cframe, speed, car, target_vehicle, tri
             local vehicle_object = nearest_vehicle and nearest_vehicle.ValidRoot;
 
             if vehicle_object then 
-                movement:move_to_position(Character.HumanoidRootPart, vehicle_object.Seat.CFrame, 135, false, vehicle_object);
+                movement:move_to_position(Character.HumanoidRootPart, vehicle_object.Seat.CFrame, 100, false, vehicle_object);
             end;
 
             return;
