@@ -183,9 +183,11 @@ workspace.ChildAdded:Connect(function(child)
     end;
 end);
 
-Player.CharacterAdded:Connect(function(character)
-    table.insert(dependencies.variables.raycast_params.FilterDescendantsInstances, character);
-end);
+Players.PlayerAdded:Connect(function(player)
+    player.CharacterAdded:Connect(function(character)
+        table.insert(dependencies.variables.raycast_params.FilterDescendantsInstances, character)
+    end)
+end)
 
 --// get free vehicles, owned helicopters, motorcycles and unsupported/new vehicles
 
