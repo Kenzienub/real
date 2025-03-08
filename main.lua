@@ -58,6 +58,10 @@ end;
 
 --// function to get the nearest vehicle that can be entered
 
+function utilities:is_vehicle_locked(vehicle)
+    return vehicle:GetAttribute("Locked") == true
+end
+
 function utilities:get_nearest_vehicle(tried)
     local nearest, distance = nil, math.huge
     local playerRoot = Character and Character:FindFirstChild("HumanoidRootPart")
@@ -76,7 +80,8 @@ function utilities:get_nearest_vehicle(tried)
             and not dependencies.unsupported_vehicles[vehicle.Name]
             and (dependencies.modules.store._state.garageOwned.Vehicles[vehicle.Name] or dependencies.free_vehicles[vehicle.Name])
             and not vehicle.Seat.Player.Value
-            and not workspace:Raycast(vehicle.Seat.Position, dependencies.variables.up_vector, dependencies.variables.raycast_params) 
+            and not workspace:Raycast(vehicle.Seat.Position, dependencies.variables.up_vector, dependencies.variables.raycast_params)
+            and not utilities:is_vehicle_locked(vehicle) -- Check if the vehicle is not locked
         then
             local magnitude = (vehicle.Seat.Position - playerPosition).Magnitude
             table.insert(validVehicles, { action = action, magnitude = magnitude })
@@ -236,6 +241,7 @@ end;
 --// no fall damage or ragdoll
 
 
+
 --// anti skydive
 
 local oldIsFlying = dependencies.modules.paraglide.IsFlying
@@ -280,6 +286,11 @@ local function teleport(cframe, tried)
     end
     
     local vehicle_object = nearest_vehicle and nearest_vehicle.ValidRoot;
+
+    if utilities:is_vehicle_locked(vehicle_object) then
+        print("Vehicle is locked, cannot teleport.")
+        return;
+    end
 
     dependencies.variables.teleporting = true;
 
@@ -330,5 +341,4 @@ local function teleport(cframe, tried)
     task.wait(0.5);
     dependencies.variables.teleporting = false;
 end;
-
 return teleport;
