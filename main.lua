@@ -280,8 +280,6 @@ RagdollModule.IsRagdoll = function(player)
     return oldIsRagdoll(player)
 end
 
-return RagdollModule
-
 --// anti skydive
 
 local oldIsFlying = dependencies.modules.paraglide.IsFlying
