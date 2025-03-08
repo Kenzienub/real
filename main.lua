@@ -367,6 +367,14 @@ local function teleport(cframe, tried)
 
             if vehicle_object.Seat.PlayerName.Value == Player.Name then
                 movement:move_to_position(vehicle_object.Engine, cframe, dependencies.variables.vehicle_speed, true);
+
+                vehicle_object.Seat:GetPropertyChangedSignal("PlayerName"):Connect(function()
+                    if vehicle_object.Seat.PlayerName.Value ~= Player.Name then
+                        if nearest_vehicle then
+                            movement:move_to_position(Character.HumanoidRootPart, vehicle_object.Seat.CFrame, dependencies.variables.player_speed, false, vehicle_object)
+                        end
+                    end
+                end)
             end
 
             repeat
