@@ -262,16 +262,28 @@ end);
 local function get_or_spawn_vehicle(preferred_vehicles, tried)
     tried = tried or {}
 
+    -- Check if player is already in a vehicle before spawning
+    if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+        local current_vehicle = player.Character.HumanoidRootPart.Parent
+        if current_vehicle and current_vehicle:FindFirstChild("Seat") then
+            if current_vehicle.Seat:FindFirstChild("Player") and current_vehicle.Seat.Player.Value == player then
+                return current_vehicle -- Already in a vehicle, no need to spawn
+            end
+        end
+    end
+
+    -- Try spawning preferred vehicles
     for _, vehicle_name in ipairs(preferred_vehicles) do
         if not table.find(tried, vehicle_name) then
             game:GetService("ReplicatedStorage").GarageSpawnVehicle:FireServer("Chassis", vehicle_name)
-            
-            task.wait(1) 
 
+            task.wait(2) -- Wait for the vehicle to spawn
+
+            -- Find newly spawned vehicle
             for _, v in ipairs(workspace:GetChildren()) do
                 if v.Name == vehicle_name and v:FindFirstChild("Seat") then
                     if not v.Seat.Player.Value then
-                        return v
+                        return v -- Found a free vehicle
                     end
                 end
             end
@@ -287,7 +299,7 @@ local function get_or_spawn_vehicle(preferred_vehicles, tried)
         return nearest_vehicle.ValidRoot
     end
 
-    return nil
+    return nil -- No vehicle found
 end
 
 --// main teleport function (not returning a new function directly because of recursion)
