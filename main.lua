@@ -87,51 +87,42 @@ end
 --// function to interpolate characters position to a position
 
 function movement:move_to_position(part, cframe, speed, car, target_vehicle, tried_vehicles)
-    if not part then return end
+    local vector_position = cframe.Position;
+    
+    if not car and workspace:Raycast(part.Position, dependencies.variables.up_vector, dependencies.variables.raycast_params) then -- if there is an object above us, use pathfind function to get to a position with no collision above
+        movement:pathfind();
+        task.wait(0.5);
+    end;
+    
+    local y_level = 500;
+    local higher_position = Vector3.new(vector_position.X, y_level, vector_position.Z);
 
-    local target_pos = cframe.Position
-    local y_level = 500
-    local elevated_target = Vector3.new(target_pos.X, y_level, target_pos.Z)
-    local playerRoot = Character and Character:FindFirstChild("HumanoidRootPart")
+    repeat
+        local velocity_unit = (higher_position - part.Position).Unit * speed;
+        part.Velocity = Vector3.new(velocity_unit.X, 0, velocity_unit.Z);
 
-    task.spawn(function()
-        if not car and workspace:Raycast(part.Position, dependencies.variables.up_vector, dependencies.variables.raycast_params) then
-            movement:pathfind()
-        end
-    end)
+        task.wait();
 
-    local connection
-    connection = run_service.Heartbeat:Connect(function(deltaTime)
-        if not part or not playerRoot then
-            connection:Disconnect()
-            return
-        end
+        part.CFrame = CFrame.new(part.CFrame.X, y_level, part.CFrame.Z);
 
-        local direction = (elevated_target - part.Position)
-        local distance = direction.Magnitude
+        if target_vehicle and target_vehicle.Seat.Player.Value then
+            table.insert(tried_vehicles, target_vehicle);
 
-        if distance < 10 then
-            part.CFrame = CFrame.new(part.Position.X, target_pos.Y, part.Position.Z)
-            part.Velocity = Vector3.zero
-            connection:Disconnect()
-            return
-        end
+            local nearest_vehicle = utilities:get_nearest_vehicle(tried_vehicles);
+            local vehicle_object = nearest_vehicle and nearest_vehicle.ValidRoot;
 
-        local velocity_unit = direction.Unit * math.min(speed * deltaTime * 60, distance)
-        part.Velocity = Vector3.new(velocity_unit.X, 0, velocity_unit.Z)
-        part.CFrame = CFrame.new(part.Position.X, y_level, part.Position.Z)
+            if vehicle_object then 
+                movement:move_to_position(Character.HumanoidRootPart, vehicle_object.Seat.CFrame, 135, false, vehicle_object);
+            end;
 
-        if target_vehicle and target_vehicle.Seat:FindFirstChild("Player") and target_vehicle.Seat.Player.Value then
-            connection:Disconnect()
-            table.insert(tried_vehicles, target_vehicle)
+            return;
+        end;
+    until (part.Position - higher_position).Magnitude < 10;
 
-            local nearest_vehicle = utilities:get_nearest_vehicle(tried_vehicles)
-            if nearest_vehicle and nearest_vehicle:FindFirstChild("ValidRoot") and nearest_vehicle.ValidRoot:FindFirstChild("Seat") then
-                movement:move_to_position(playerRoot, nearest_vehicle.ValidRoot.Seat.CFrame, 135, false, nearest_vehicle.ValidRoot, tried_vehicles)
-            end
-        end
-    end)
-end
+    part.CFrame = CFrame.new(part.Position.X, vector_position.Y, part.Position.Z);
+    part.Velocity = Vector3.zero;
+end;
+
 
 --// raycast filter
 
@@ -271,15 +262,12 @@ local function teleport(cframe, tried)
                 local enter_attempts = 1;
 
                 repeat
-                    if nearest_vehicle and nearest_vehicle.Callback then
-                        nearest_vehicle:Callback(true)
-                    else
-                        break
-                    end
+                    nearest_vehicle:Callback(true)
                     
-                    enter_attempts = enter_attempts + 1
-                    task.wait(0.1)
-                until enter_attempts == 10 or vehicle_object.Seat.PlayerName.Value == Player.Name                
+                    enter_attempts = enter_attempts + 1;
+
+                    task.wait(0.1);
+                until enter_attempts == 10 or vehicle_object.Seat.PlayerName.Value == player.Name;           
 
                 dependencies.variables.stopVelocity = false;
 
