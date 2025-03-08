@@ -232,7 +232,6 @@ end;
 --// no fall damage or ragdoll
 
 
-
 --// anti skydive
 
 local oldIsFlying = dependencies.modules.paraglide.IsFlying
