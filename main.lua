@@ -112,7 +112,7 @@ function movement:move_to_position(part, cframe, speed, car, target_vehicle, tri
             local vehicle_object = nearest_vehicle and nearest_vehicle.ValidRoot;
 
             if vehicle_object then 
-                movement:move_to_position(Character.HumanoidRootPart, vehicle_object.Seat.CFrame, 135, false, vehicle_object);
+                movement:move_to_position(player.Character.HumanoidRootPart, vehicle_object.Seat.CFrame, 135, false, vehicle_object);
             end;
 
             return;
@@ -122,7 +122,6 @@ function movement:move_to_position(part, cframe, speed, car, target_vehicle, tri
     part.CFrame = CFrame.new(part.Position.X, vector_position.Y, part.Position.Z);
     part.Velocity = Vector3.zero;
 end;
-
 
 --// raycast filter
 
