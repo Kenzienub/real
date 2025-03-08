@@ -259,48 +259,27 @@ end);
 
 --// spawn vehicle
 
-function is_inside()
-    local hrp = Character.HumanoidRootPart
-    local ray_direction = Vector3.new(0, 50, 0)
-    local result = workspace:Raycast(hrp.Position, ray_direction)
-
-    return result ~= nil
-end
-
-local function get_or_spawn_vehicle(preferred_vehicles, tried)
-    tried = tried or {}
-
-    if Character and Character:FindFirstChild("HumanoidRootPart") then
-        local current_vehicle = Character.HumanoidRootPart.Parent
-        if current_vehicle and current_vehicle:FindFirstChild("Seat") then
-            if current_vehicle.Seat:FindFirstChild("Player") and current_vehicle.Seat.Player.Value == Player then
-                return current_vehicle
-            end
-        end
-    end
+local function get_or_spawn_vehicle(preferred_vehicles)
+    local spawned_vehicle = nil
+    local spawn_attempted = false
 
     for _, vehicle_name in ipairs(preferred_vehicles) do
-        if not table.find(tried, vehicle_name) then
-            game:GetService("ReplicatedStorage").GarageSpawnVehicle:FireServer("Chassis", vehicle_name)
+        game:GetService("ReplicatedStorage").GarageSpawnVehicle:FireServer("Chassis", vehicle_name)
+        spawn_attempted = true
 
-            task.wait(2)
-
+        local start_time = tick()
+        repeat task.wait(0.2)
             for _, v in ipairs(workspace:GetChildren()) do
-                if v.Name == vehicle_name and v:FindFirstChild("Seat") then
-                    if not v.Seat.Player.Value then
-                        return v
-                    end
+                if v.Name == vehicle_name and v:FindFirstChild("Seat") and not v.Seat:FindFirstChild("Player") then
+                    spawned_vehicle = v
+                    break
                 end
             end
+        until spawned_vehicle or tick() - start_time >= 2
 
-            table.insert(tried, vehicle_name)
+        if spawned_vehicle then
+            return spawned_vehicle
         end
-    end
-
-    local nearest_vehicle = utilities:get_nearest_vehicle(tried)
-
-    if nearest_vehicle then
-        return nearest_vehicle.ValidRoot
     end
 
     return nil
@@ -309,69 +288,62 @@ end
 --// main teleport function (not returning a new function directly because of recursion)
 
 local function teleport(cframe, tried)
-    local relative_position = (cframe.Position - Character.HumanoidRootPart.Position);
-    local target_distance = relative_position.Magnitude;
+    local relative_position = (cframe.Position - Character.HumanoidRootPart.Position)
+    local target_distance = relative_position.Magnitude
 
     if target_distance <= 20 and not workspace:Raycast(Character.HumanoidRootPart.Position, relative_position.Unit * target_distance, dependencies.variables.raycast_params) then 
-        Character.HumanoidRootPart.CFrame = cframe; 
-        
-        return;
-    end; 
-
-    local tried = tried or { };
-    local nearest_vehicle = utilities:get_nearest_vehicle(tried);
-
-    if not nearest_vehicle then
-        return;
+        Character.HumanoidRootPart.CFrame = cframe
+        return
     end
-    
-    local vehicle_object = nearest_vehicle and nearest_vehicle.ValidRoot;
 
-    dependencies.variables.teleporting = true;
+    tried = tried or {}
+    local preferred_vehicles = { "Camaro" }
+    local nearest_vehicle = utilities:get_nearest_vehicle(tried)
+    local vehicle_object = nearest_vehicle and nearest_vehicle.ValidRoot or get_or_spawn_vehicle(preferred_vehicles)
 
-    if vehicle_object then 
-        local vehicle_distance = (vehicle_object.Seat.Position - Character.HumanoidRootPart.Position).Magnitude;
+    if not vehicle_object then
+        movement:move_to_position(Character.HumanoidRootPart, cframe, dependencies.variables.player_speed)
+        return
+    end
 
-        if target_distance < vehicle_distance then
-            movement:move_to_position(Character.HumanoidRootPart, cframe, dependencies.variables.player_speed);
-        else 
-            if vehicle_object.Seat.PlayerName.Value ~= Player.Name then
-                movement:move_to_position(Character.HumanoidRootPart, vehicle_object.Seat.CFrame, dependencies.variables.player_speed, false, vehicle_object, tried);
+    dependencies.variables.teleporting = true
 
-                dependencies.variables.stopVelocity = true;
+    local vehicle_distance = (vehicle_object.Seat.Position - Character.HumanoidRootPart.Position).Magnitude
 
-                local enter_attempts = 1;
+    if target_distance < vehicle_distance then
+        movement:move_to_position(Character.HumanoidRootPart, cframe, dependencies.variables.player_speed)
+    else 
+        if vehicle_object:FindFirstChild("Seat") and vehicle_object.Seat:FindFirstChild("PlayerName") and vehicle_object.Seat.PlayerName.Value ~= Player.Name then
+            movement:move_to_position(Character.HumanoidRootPart, vehicle_object.Seat.CFrame, dependencies.variables.player_speed, false, vehicle_object, tried)
 
-                repeat
-                    nearest_vehicle:Callback(true)
-                    
-                    enter_attempts = enter_attempts + 1;
+            dependencies.variables.stopVelocity = true
 
-                    task.wait(0.1);
-                until enter_attempts == 10 or vehicle_object.Seat.PlayerName.Value == Player.Name;
+            local enter_attempts = 1
 
-                dependencies.variables.stopVelocity = false;
+            repeat 
+                task.wait(0.1)
+                vehicle_object:Callback(true)
+                enter_attempts = enter_attempts + 1
+            until enter_attempts == 10 or (vehicle_object.Seat:FindFirstChild("PlayerName") and vehicle_object.Seat.PlayerName.Value == Player.Name)
 
-                if vehicle_object.Seat.PlayerName.Value ~= Player.Name then
-                    table.insert(tried, vehicle_object);
+            dependencies.variables.stopVelocity = false
 
-                    return teleport(cframe, tried or { vehicle_object });
-                end;
-            end;
+            if vehicle_object.Seat:FindFirstChild("PlayerName") and vehicle_object.Seat.PlayerName.Value ~= Player.Name then
+                table.insert(tried, vehicle_object)
+                return teleport(cframe, tried or { vehicle_object })
+            end
+        end
 
-            movement:move_to_position(vehicle_object.Engine, cframe, dependencies.variables.vehicle_speed, true);
+        movement:move_to_position(vehicle_object.Engine, cframe, dependencies.variables.vehicle_speed, true)
 
-            repeat
-                task.wait(0.15);
-                dependencies.modules.character_util.OnJump();
-            until vehicle_object.Seat.PlayerName.Value ~= Player.Name;
-        end;
-    else
-        movement:move_to_position(Character.HumanoidRootPart, cframe, dependencies.variables.player_speed);
-    end;
+        repeat
+            task.wait(0.15)
+            dependencies.modules.character_util.OnJump()
+        until vehicle_object.Seat:FindFirstChild("PlayerName") and vehicle_object.Seat.PlayerName.Value ~= Player.Name
+    end
 
-    task.wait(0.5);
-    dependencies.variables.teleporting = false;
-end;
+    task.wait(0.5)
+    dependencies.variables.teleporting = false
+end
 
 return teleport;
