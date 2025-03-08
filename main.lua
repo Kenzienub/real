@@ -14,6 +14,10 @@ local Players = game:GetService("Players");
 local Player = Players.LocalPlayer or Players:WaitForChild("LocalPlayer", 9e9);
 local Character = Player.Character or Player:WaitForChild("Character", 9e9);
 
+Player.CharacterAdded:Connect(function(newCharacter)
+    Character = newCharacter
+end)
+
 local dependencies = {
     variables = {
         up_vector = Vector3.new(0, 350, 0),
