@@ -23,8 +23,8 @@ local dependencies = {
         up_vector = Vector3.new(0, 350, 0),
         raycast_params = RaycastParams.new(),
         path = pathfinding_service:CreatePath({WaypointSpacing = 3}),
-        player_speed = 135, 
-        vehicle_speed = 200,
+        player_speed = 130, 
+        vehicle_speed = 180,
         teleporting = false,
         stopVelocity = false
     },
@@ -395,8 +395,8 @@ local function teleport(cframe, tried)
                 end;
 
                 if vehicle_object.Seat.PlayerName.Value == Player.Name then
-                    LockCar()
                     movement:move_to_position(vehicle_object.Engine, cframe, dependencies.variables.vehicle_speed, true);
+                    LockCar()
                 end
 
                 repeat
