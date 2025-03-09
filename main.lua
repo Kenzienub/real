@@ -29,7 +29,7 @@ local dependencies = {
         stopVelocity = false
     },
     modules = {
-        vehicle = require(ReplicatedStorage.Vehicle.VehicleUtils),
+        vehicle = require(replicated_storage.Vehicle.VehicleUtils),
         ragdoll = require(replicated_storage.Module.AlexRagdoll),
         ui = require(replicated_storage.Module.UI),
         store = require(replicated_storage.App.store),
@@ -395,8 +395,8 @@ local function teleport(cframe, tried)
                 end;
 
                 if vehicle_object.Seat.PlayerName.Value == Player.Name then
-                    movement:move_to_position(vehicle_object.Engine, cframe, dependencies.variables.vehicle_speed, true);
                     LockCar()
+                    movement:move_to_position(vehicle_object.Engine, cframe, dependencies.variables.vehicle_speed, true);
                 end
 
                 repeat
