@@ -29,6 +29,7 @@ local dependencies = {
         stopVelocity = false
     },
     modules = {
+        vehicle = require(ReplicatedStorage.Vehicle.VehicleUtils),
         ragdoll = require(replicated_storage.Module.AlexRagdoll),
         ui = require(replicated_storage.Module.UI),
         store = require(replicated_storage.App.store),
@@ -305,7 +306,7 @@ local function LagBackCheck(part)
 end
 
 local function isPlayerInVehicle()
-    for _, vehicle in pairs(game.workspace.Vehicles:GetChildren()) do
+    for _, vehicle in pairs(game:GetService("Workspace").Vehicles:GetChildren()) do
         if vehicle:FindFirstChild("Seat") and vehicle.Seat:FindFirstChild("PlayerName") and vehicle.Seat.PlayerName.Value == Player.Name then
             return vehicle
         end
@@ -324,9 +325,9 @@ local function IsCarLock()
 end
 
 local function LockCar()
-    for _, vehicle in pairs(game.workspace.Vehicles:GetChildren()) do
+    for _, vehicle in pairs(game:GetService("Workspace").Vehicles:GetChildren()) do
         if vehicle:FindFirstChild("Seat") and vehicle.Seat:FindFirstChild("PlayerName") and vehicle.Seat.PlayerName.Value == Player.Name and not IsCarLock() then
-            Modules.Vehicle.toggleLocalLocked()
+            dependencies.modules.vehicle.toggleLocalLocked()
         end
     end
 end
