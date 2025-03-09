@@ -239,20 +239,6 @@ for _, value in ipairs(workspace:GetDescendants()) do
     end;
 end;
 
---// no fall damage or ragdoll
-
---[[
-for _, v in pairs({"Ragdoll", "Unragdoll", "IsRagdoll"}) do
-    local old = dependencies.modules.ragdoll[v]
-    dependencies.modules.ragdoll[v] = newcclosure(function(...)
-        if dependencies.variables.teleporting then
-            return v == "IsRagdoll" and false or nil
-        end
-        return old and old(...)
-    end)
-end
---]]
-
 --// anti skydive
 
 local oldIsFlying = dependencies.modules.paraglide.IsFlying
@@ -319,7 +305,7 @@ local function LagBackCheck(part)
 end
 
 local function isPlayerInVehicle()
-    for _, vehicle in pairs(game:GetSerivce("Workspace").Vehicles:GetChildren()) do
+    for _, vehicle in pairs(game.workspace.Vehicles:GetChildren()) do
         if vehicle:FindFirstChild("Seat") and vehicle.Seat:FindFirstChild("PlayerName") and vehicle.Seat.PlayerName.Value == Player.Name then
             return vehicle
         end
@@ -379,7 +365,7 @@ local function teleport(cframe, tried)
                     
                         enter_attempts = enter_attempts + 1
                     until enter_attempts == 10 or (vehicle_object.Seat:FindFirstChild("PlayerName") and vehicle_object.Seat.PlayerName.Value == Player.Name)
-
+                    
                     dependencies.variables.stopVelocity = false;
 
                     if vehicle_object.Seat.PlayerName.Value ~= Player.Name then
