@@ -239,24 +239,6 @@ for _, value in ipairs(workspace:GetDescendants()) do
     end;
 end;
 
---// LockCar
-
-local function IsCarLock()
-    local Success, Result = pcall(function()
-        return LocalPlayer.PlayerGui.AppUI.Speedometer.Top.Lock.Icon.Image
-    end)
-
-    if Success then
-        return Result ~= "rbxassetid://5928936296"
-    end
-end
-
-local function LockCar()
-    if not IsCarLock() then
-        Modules.Vehicle.toggleLocalLocked()
-    end
-end
-
 --// no fall damage or ragdoll
 
 --[[
@@ -339,7 +321,6 @@ end
 local function isPlayerInVehicle()
     for _, vehicle in pairs(game:GetSerivce("Workspace").Vehicles:GetChildren()) do
         if vehicle:FindFirstChild("Seat") and vehicle.Seat:FindFirstChild("PlayerName") and vehicle.Seat.PlayerName.Value == Player.Name then
-            LockCar()
             return vehicle
         end
     end
