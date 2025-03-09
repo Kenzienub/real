@@ -259,6 +259,7 @@ end
 
 --// no fall damage or ragdoll
 
+--[[
 for _, v in pairs({"Ragdoll", "Unragdoll", "IsRagdoll"}) do
     local old = dependencies.modules.ragdoll[v]
     dependencies.modules.ragdoll[v] = newcclosure(function(...)
@@ -268,6 +269,7 @@ for _, v in pairs({"Ragdoll", "Unragdoll", "IsRagdoll"}) do
         return old and old(...)
     end)
 end
+--]]
 
 --// anti skydive
 
