@@ -337,8 +337,9 @@ local function LagBackCheck(part)
 end
 
 local function isPlayerInVehicle()
-    for _, vehicle in pairs(game.workspace.Vehicles:GetChildren()) do
+    for _, vehicle in pairs(game:GetSerivce("Workspace").Vehicles:GetChildren()) do
         if vehicle:FindFirstChild("Seat") and vehicle.Seat:FindFirstChild("PlayerName") and vehicle.Seat.PlayerName.Value == Player.Name then
+            LockCar()
             return vehicle
         end
     end
@@ -409,7 +410,6 @@ local function teleport(cframe, tried)
 
                 if vehicle_object.Seat.PlayerName.Value == Player.Name then
                     movement:move_to_position(vehicle_object.Engine, cframe, dependencies.variables.vehicle_speed, true);
-                    LockCar();
                 end
 
                 repeat
