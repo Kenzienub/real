@@ -316,7 +316,7 @@ end
 
 local function IsCarLock()
     local Success, Result = pcall(function()
-        return LocalPlayer.PlayerGui.AppUI.Speedometer.Top.Lock.Icon.Image
+        return Player.PlayerGui.AppUI.Speedometer.Top.Lock.Icon.Image
     end)
 
     if Success then
