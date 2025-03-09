@@ -217,20 +217,21 @@ end;
 
 --// get all positions near a door which have no collision above them
 
-for _, value in ipairs(workspace:GetDescendants()) do
+for index, value in next, game:GetService("Workspace"):GetDescendants() do
     if value.Name:sub(-4, -1) == "Door" then 
         local touch_part = value:FindFirstChild("Touch");
 
         if touch_part and touch_part:IsA("BasePart") then
-            for distance = 5, 300, 5 do 
-                local forward_position = touch_part.Position + touch_part.CFrame.LookVector * (distance + 3) -- distance + 3 studs forward from the door
-                local backward_position = touch_part.Position + touch_part.CFrame.LookVector * -(distance + 3) -- distance + 3 studs backward from the door
+            for distance = 5, 100, 5 do 
+                local forward_position, backward_position = touch_part.Position + touch_part.CFrame.LookVector * (distance + 3), touch_part.Position + touch_part.CFrame.LookVector * -(distance + 3); -- distance + 3 studs forward and backward from the door
                 
                 if not workspace:Raycast(forward_position, dependencies.variables.up_vector, dependencies.variables.raycast_params) then -- if there is nothing above the forward position from the door
                     table.insert(dependencies.door_positions, { instance = value, position = forward_position });
+
                     break;
                 elseif not workspace:Raycast(backward_position, dependencies.variables.up_vector, dependencies.variables.raycast_params) then -- if there is nothing above the backward position from the door
                     table.insert(dependencies.door_positions, { instance = value, position = backward_position });
+
                     break;
                 end;
             end;
@@ -239,6 +240,7 @@ for _, value in ipairs(workspace:GetDescendants()) do
 end;
 
 --// no fall damage or ragdoll
+
 
 
 --// anti skydive
