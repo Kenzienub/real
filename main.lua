@@ -397,7 +397,7 @@ local function teleport(cframe, tried)
                     
                         enter_attempts = enter_attempts + 1
                     until enter_attempts == 10 or (vehicle_object.Seat:FindFirstChild("PlayerName") and vehicle_object.Seat.PlayerName.Value == Player.Name)
-                    
+
                     dependencies.variables.stopVelocity = false;
 
                     if vehicle_object.Seat.PlayerName.Value ~= Player.Name then
@@ -408,8 +408,8 @@ local function teleport(cframe, tried)
                 end;
 
                 if vehicle_object.Seat.PlayerName.Value == Player.Name then
-                    LockCar()
                     movement:move_to_position(vehicle_object.Engine, cframe, dependencies.variables.vehicle_speed, true);
+                    LockCar();
                 end
 
                 repeat
