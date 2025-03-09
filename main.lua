@@ -20,12 +20,12 @@ end)
 
 local dependencies = {
     variables = {
-        up_vector = Vector3.new(0, 350, 0),
+        up_vector = Vector3.new(0, 500, 0),
         raycast_params = RaycastParams.new(),
         path = pathfinding_service:CreatePath({WaypointSpacing = 3}),
         player_speed = 135, 
-        vehicle_speed = 200,
-        teleporting = false,
+        vehicle_speed = 300,
+        teleporting = true,
         stopVelocity = false
     },
     modules = {
