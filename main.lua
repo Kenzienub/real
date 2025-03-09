@@ -267,7 +267,6 @@ for _, v in pairs({"Ragdoll", "Unragdoll", "IsRagdoll"}) do
         end
         return old and old(...)
     end)
-    return dependencies.modules.ragdoll
 end
 
 --// anti skydive
