@@ -313,6 +313,24 @@ local function isPlayerInVehicle()
     return nil
 end
 
+local function IsCarLock()
+    local Success, Result = pcall(function()
+        return LocalPlayer.PlayerGui.AppUI.Speedometer.Top.Lock.Icon.Image
+    end)
+
+    if Success then
+        return Result ~= "rbxassetid://5928936296"
+    end
+end
+
+local function LockCar()
+    for _, vehicle in pairs(game.workspace.Vehicles:GetChildren()) do
+        if vehicle:FindFirstChild("Seat") and vehicle.Seat:FindFirstChild("PlayerName") and vehicle.Seat.PlayerName.Value == Player.Name and not IsCarLock() then
+            Modules.Vehicle.toggleLocalLocked()
+        end
+    end
+end
+
 local function teleport(cframe, tried)
     local relative_position = (cframe.Position - Character.HumanoidRootPart.Position);
     local target_distance = relative_position.Magnitude;
@@ -365,7 +383,7 @@ local function teleport(cframe, tried)
                     
                         enter_attempts = enter_attempts + 1
                     until enter_attempts == 10 or (vehicle_object.Seat:FindFirstChild("PlayerName") and vehicle_object.Seat.PlayerName.Value == Player.Name)
-                    
+
                     dependencies.variables.stopVelocity = false;
 
                     if vehicle_object.Seat.PlayerName.Value ~= Player.Name then
@@ -376,6 +394,7 @@ local function teleport(cframe, tried)
                 end;
 
                 if vehicle_object.Seat.PlayerName.Value == Player.Name then
+                    LockCar()
                     movement:move_to_position(vehicle_object.Engine, cframe, dependencies.variables.vehicle_speed, true);
                 end
 
