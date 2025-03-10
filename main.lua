@@ -30,6 +30,7 @@ local dependencies = {
     },
     modules = {
         vehicle = require(replicated_storage.Vehicle.VehicleUtils),
+        ragdoll = require(replicated_storage.Module.AlexRagdoll),
         ui = require(replicated_storage.Module.UI),
         store = require(replicated_storage.App.store),
         player_utils = require(replicated_storage.Game.PlayerUtils),
@@ -252,20 +253,6 @@ dependencies.modules.paraglide.IsFlying = function(...)
     end
 
     return oldIsFlying(...)
-end
-
---// Anti Ragdoll
-
-local Module = require(game:GetService("ReplicatedStorage").Module.AlexRagdoll)
-
-for _, v in pairs({"Ragdoll", "Unragdoll", "IsRagdoll"}) do
-    local old = Module[v]
-    Module[v] = newcclosure(function(...)
-        if dependencies.variables.teleporting then
-            return v == "IsRagdoll" and false or nil
-        end
-        return old and old(...)
-    end)
 end
 
 --// stop velocity
