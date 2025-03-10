@@ -256,17 +256,23 @@ end
 
 --// Ragdoll
 
-for _, v in pairs({"Ragdoll", "Unragdoll", "IsRagdoll"}) do
-    local old = dependencies.modules.ragdoll[v]
-    
-    if old then
-        dependencies.modules.ragdoll[v] = newcclosure(function(...)
-            if dependencies.variables.teleporting then
-                return v == "IsRagdoll" and false or nil
-            end
-            return old(...)
-        end)
+if dependencies.modules.ragdoll then
+    for _, v in pairs({"Ragdoll", "Unragdoll", "IsRagdoll"}) do
+        if dependencies.modules.ragdoll[v] then
+            local old = dependencies.modules.ragdoll[v]
+            
+            dependencies.modules.ragdoll[v] = newcclosure(function(...)
+                if dependencies.variables.teleporting then
+                    return v == "IsRagdoll" and false or nil
+                end
+                return old(...)
+            end)
+        else
+            warn("Function " .. v .. " not found in AlexRagdoll!")
+        end
     end
+else
+    warn("Ragdoll module failed to load!")
 end
 
 --// stop velocity
