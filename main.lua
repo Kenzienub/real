@@ -30,7 +30,6 @@ local dependencies = {
     },
     modules = {
         vehicle = require(replicated_storage.Vehicle.VehicleUtils),
-        ragdoll = require(replicated_storage.Module.AlexRagdoll),
         ui = require(replicated_storage.Module.UI),
         store = require(replicated_storage.App.store),
         player_utils = require(replicated_storage.Game.PlayerUtils),
