@@ -29,7 +29,7 @@ local dependencies = {
         stopVelocity = false
     },
     modules = {
-        tagutils = require(replicated_storage.Tag.TagUtils),
+        tagutils = require(ReplicatedStorage.Tag.TagUtils),
         vehicle = require(replicated_storage.Vehicle.VehicleUtils),
         ragdoll = require(replicated_storage.Module.AlexRagdoll),
         ui = require(replicated_storage.Module.UI),
@@ -241,7 +241,7 @@ for _, value in ipairs(workspace:GetDescendants()) do
     end;
 end;
 
---// anti ragdoll
+--// ragdoll
 
 local OldPointInTag = dependencies.modules.tagutils.isPointInTag
 dependencies.modules.tagutils.isPointInTag = newcclosure(function(point, tag)
