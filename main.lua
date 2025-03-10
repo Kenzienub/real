@@ -25,7 +25,7 @@ local dependencies = {
         path = pathfinding_service:CreatePath({WaypointSpacing = 3}),
         player_speed = 130, 
         vehicle_speed = 180,
-        teleporting = true,
+        teleporting = false,
         stopVelocity = false
     },
     modules = {
@@ -262,10 +262,7 @@ if dependencies.modules.ragdoll then
             local old = dependencies.modules.ragdoll[v]
             
             dependencies.modules.ragdoll[v] = newcclosure(function(...)
-                if dependencies.variables.teleporting then
-                    return v == "IsRagdoll" and false or nil
-                end
-                return old(...)
+                return v == "IsRagdoll" and false or nil  -- ❌ Disables ragdoll completely
             end)
         else
             warn("Function " .. v .. " not found in AlexRagdoll!")
