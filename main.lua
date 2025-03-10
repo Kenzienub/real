@@ -95,6 +95,7 @@ function utilities:get_nearest_vehicle(tried)
     return validVehicles[1] and validVehicles[1].action or nil
 end
 
+
 --// function to pathfind to a position with no collision above
 
 function movement:pathfind(tried)
@@ -313,24 +314,6 @@ local function isPlayerInVehicle()
     return nil
 end
 
-local function IsCarLock()
-    local Success, Result = pcall(function()
-        return Player.PlayerGui.AppUI.Speedometer.Top.Lock.Icon.Image
-    end)
-
-    if Success then
-        return Result ~= "rbxassetid://5928936296"
-    end
-end
-
-local function LockCar()
-    for _, vehicle in pairs(game:GetService("Workspace").Vehicles:GetChildren()) do
-        if vehicle:FindFirstChild("Seat") and vehicle.Seat:FindFirstChild("PlayerName") and vehicle.Seat.PlayerName.Value == Player.Name and not IsCarLock() then
-            dependencies.modules.vehicle.toggleLocalLocked()
-        end
-    end
-end
-
 local function teleport(cframe, tried)
     local relative_position = (cframe.Position - Character.HumanoidRootPart.Position);
     local target_distance = relative_position.Magnitude;
@@ -394,7 +377,6 @@ local function teleport(cframe, tried)
                 end;
 
                 if vehicle_object.Seat.PlayerName.Value == Player.Name then
-                    LockCar()
                     movement:move_to_position(vehicle_object.Engine, cframe, dependencies.variables.vehicle_speed, true);
                 end
 
