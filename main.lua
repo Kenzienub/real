@@ -48,18 +48,6 @@ local dependencies = {
 local movement = { };
 local utilities = { };
 
-local Module = require(game:GetService("ReplicatedStorage").Module.AlexRagdoll)
-
-for _, v in pairs({"Ragdoll", "Unragdoll", "IsRagdoll"}) do
-    local old = Module[v]
-    Module[v] = newcclosure(function(...)
-        if dependencies.variables.teleporting then
-            return v == "IsRagdoll" and false or nil
-        end
-        return old and old(...)
-    end)
-end
-
 --// function to toggle if a door can be collided with
 
 function utilities:toggle_door_collision(door, toggle)
@@ -251,6 +239,25 @@ for _, value in ipairs(workspace:GetDescendants()) do
         end;
     end;
 end;
+
+--// anti ragdoll
+
+spawn(function()
+    local Module = require(game:GetService("ReplicatedStorage").Module.AlexRagdoll)
+
+    for _, v in pairs({"Ragdoll", "Unragdoll", "IsRagdoll"}) do
+        local old = Module[v]
+        Module[v] = newcclosure(function(...)
+            if dependencies.variables.teleporting then
+                return v == "IsRagdoll" and false or nil
+            end
+            return old and old(...)
+        end)
+    end
+
+    return Module
+end)
+
 --// anti skydive
 
 local oldIsFlying = dependencies.modules.paraglide.IsFlying
