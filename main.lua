@@ -257,9 +257,11 @@ end
 
 --// Anti Ragdoll
 
+local Module = require(game:GetService("ReplicatedStorage").Module.AlexRagdoll)
+
 for _, v in pairs({"Ragdoll", "Unragdoll", "IsRagdoll"}) do
-    local old = dependencies.modules.ragdoll[v]
-    dependencies.modules.ragdoll[v] = newcclosure(function(...)
+    local old = Module[v]
+    Module[v] = newcclosure(function(...)
         if dependencies.variables.teleporting then
             return v == "IsRagdoll" and false or nil
         end
