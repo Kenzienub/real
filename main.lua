@@ -255,6 +255,18 @@ dependencies.modules.paraglide.IsFlying = function(...)
     return oldIsFlying(...)
 end
 
+--// Anti Ragdoll
+
+for _, v in pairs({"Ragdoll", "Unragdoll", "IsRagdoll"}) do
+    local old = dependencies.modules.ragdoll[v]
+    dependencies.modules.ragdoll[v] = newcclosure(function(...)
+        if dependencies.variables.teleporting then
+            return v == "IsRagdoll" and false or nil
+        end
+        return old and old(...)
+    end)
+end
+
 --// stop velocity
 
 task.spawn(function()
