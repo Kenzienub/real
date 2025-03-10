@@ -29,6 +29,7 @@ local dependencies = {
         stopVelocity = false
     },
     modules = {
+        tagutils = require(replicated_storage.Tag.TagUtils),
         vehicle = require(replicated_storage.Vehicle.VehicleUtils),
         ragdoll = require(replicated_storage.Module.AlexRagdoll),
         ui = require(replicated_storage.Module.UI),
@@ -242,20 +243,13 @@ end;
 
 --// anti ragdoll
 
-spawn(function()
-    local Module = require(game:GetService("ReplicatedStorage").Module.AlexRagdoll)
-
-    for _, v in pairs({"Ragdoll", "Unragdoll", "IsRagdoll"}) do
-        local old = Module[v]
-        Module[v] = newcclosure(function(...)
-            if dependencies.variables.teleporting then
-                return v == "IsRagdoll" and false or nil
-            end
-            return old and old(...)
-        end)
+local OldPointInTag = Modules.TagUtils.isPointInTag
+dependencies.modules.tagutils.isPointInTag = newcclosure(function(point, tag)
+    if table.find({"NoRagdoll", "NoFallDamage", "NoSkydive"}, tag) then
+        return true
     end
-
-    return Module
+            
+    return OldPointInTag(point, tag)
 end)
 
 --// anti skydive
