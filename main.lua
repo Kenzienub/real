@@ -257,10 +257,10 @@ end
 --// Ragdoll
 
 for _, v in pairs({"Ragdoll", "Unragdoll", "IsRagdoll"}) do
-    local old = dependencies.modules.AlexRagdol[v]
+    local old = dependencies.modules.AlexRagdoll[v]
     
     if old then
-        dependencies.modules.AlexRagdol[v] = newcclosure(function(...)
+        dependencies.modules.AlexRagdoll[v] = newcclosure(function(...)
             if dependencies.variables.teleporting then
                 return v == "IsRagdoll" and false or nil
             end
