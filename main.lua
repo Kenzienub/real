@@ -243,7 +243,7 @@ end;
 
 --// anti ragdoll
 
-local OldPointInTag = Modules.TagUtils.isPointInTag
+local OldPointInTag = dependencies.modules.tagutils.isPointInTag
 dependencies.modules.tagutils.isPointInTag = newcclosure(function(point, tag)
     if table.find({"NoRagdoll", "NoFallDamage", "NoSkydive"}, tag) then
         return true
