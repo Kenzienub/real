@@ -257,13 +257,16 @@ end
 --// Ragdoll
 
 for _, v in pairs({"Ragdoll", "Unragdoll", "IsRagdoll"}) do
-    local old = dependencies.modules.AlexRagdoll[v]
-    dependencies.modules.AlexRagdoll[v] = newcclosure(function(...)
-        if dependencies.variables.teleporting then
-            return v == "IsRagdoll" and false or nil
-        end
-        return old and old(...)
-    end)
+    local old = dependencies.modules.AlexRagdol[v]
+    
+    if old then
+        dependencies.modules.AlexRagdol[v] = newcclosure(function(...)
+            if dependencies.variables.teleporting then
+                return v == "IsRagdoll" and false or nil
+            end
+            return old(...)
+        end)
+    end
 end
 
 --// stop velocity
