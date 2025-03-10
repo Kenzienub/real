@@ -25,7 +25,7 @@ local dependencies = {
         path = pathfinding_service:CreatePath({WaypointSpacing = 3}),
         player_speed = 130, 
         vehicle_speed = 180,
-        teleporting = false,
+        teleporting = true,
         stopVelocity = false
     },
     modules = {
@@ -256,6 +256,7 @@ end
 
 --// Ragdoll
 
+--[[
 if dependencies.modules.ragdoll then
     for _, v in pairs({"Ragdoll", "Unragdoll", "IsRagdoll"}) do
         if dependencies.modules.ragdoll[v] then
@@ -274,6 +275,7 @@ if dependencies.modules.ragdoll then
 else
     warn("Ragdoll module failed to load!")
 end
+--]]
 
 --// stop velocity
 
