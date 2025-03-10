@@ -95,7 +95,6 @@ function utilities:get_nearest_vehicle(tried)
     return validVehicles[1] and validVehicles[1].action or nil
 end
 
-
 --// function to pathfind to a position with no collision above
 
 function movement:pathfind(tried)
@@ -255,6 +254,18 @@ dependencies.modules.paraglide.IsFlying = function(...)
     return oldIsFlying(...)
 end
 
+--// Ragdoll
+
+for _, v in pairs({"Ragdoll", "Unragdoll", "IsRagdoll"}) do
+    local old = dependencies.modules.AlexRagdoll[v]
+    dependencies.modules.AlexRagdoll[v] = newcclosure(function(...)
+        if dependencies.variables.teleporting then
+            return v == "IsRagdoll" and false or nil
+        end
+        return old and old(...)
+    end)
+end
+
 --// stop velocity
 
 task.spawn(function()
@@ -395,8 +406,8 @@ local function teleport(cframe, tried)
                 end;
 
                 if vehicle_object.Seat.PlayerName.Value == Player.Name then
-                    movement:move_to_position(vehicle_object.Engine, cframe, dependencies.variables.vehicle_speed, true);
                     LockCar()
+                    movement:move_to_position(vehicle_object.Engine, cframe, dependencies.variables.vehicle_speed, true);
                 end
 
                 repeat
