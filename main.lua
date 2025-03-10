@@ -254,25 +254,6 @@ dependencies.modules.paraglide.IsFlying = function(...)
     return oldIsFlying(...)
 end
 
---// Ragdoll
-
-repeat task.wait() until dependencies and dependencies.modules and dependencies.modules.ragdoll
-print("Ragdoll module loaded, applying override...")
-
-for _, v in pairs({"Ragdoll", "Unragdoll", "IsRagdoll"}) do
-    if dependencies.modules.ragdoll[v] then
-        local old = dependencies.modules.ragdoll[v]
-        dependencies.modules.ragdoll[v] = newcclosure(function(...)
-            if dependencies.variables.teleporting then
-                return v == "IsRagdoll" and false or nil
-            end
-            return old(...)
-        end)
-    else
-        warn("Function " .. v .. " not found in AlexRagdoll!")
-    end
-end
-
 --// stop velocity
 
 task.spawn(function()
