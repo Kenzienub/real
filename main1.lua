@@ -167,7 +167,7 @@ function movement:move_to_position(part, cframe, speed, car, target_vehicle, tri
 
         part.CFrame = CFrame.new(part.CFrame.X, y_level, part.CFrame.Z);
 
-        if target_vehicle and target_vehicle.Seat.Player.Value then
+        if target_vehicle and target_vehicle.Seat and target_vehicle.Seat.Player.Value then
             table.insert(tried_vehicles, target_vehicle);
 
             local nearest_vehicle = utilities:get_nearest_vehicle(tried_vehicles);
@@ -243,7 +243,6 @@ end;
 
 --// ragdoll
 
---[[
 local OldPointInTag = dependencies.modules.tagutils.isPointInTag
 dependencies.modules.tagutils.isPointInTag = newcclosure(function(point, tag)
     if table.find({"NoRagdoll", "NoFallDamage", "NoSkydive"}, tag) then
@@ -251,7 +250,6 @@ dependencies.modules.tagutils.isPointInTag = newcclosure(function(point, tag)
     end
     return OldPointInTag(point, tag)
 end)
---]]
 
 --// anti skydive
 
