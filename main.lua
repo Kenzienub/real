@@ -29,6 +29,7 @@ local dependencies = {
         stopVelocity = false
     },
     modules = {
+        tagutils = require(replicated_storage.Tag.TagUtils),
         vehicle = require(replicated_storage.Vehicle.VehicleUtils),
         ragdoll = require(replicated_storage.Module.AlexRagdoll),
         ui = require(replicated_storage.Module.UI),
