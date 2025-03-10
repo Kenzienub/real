@@ -240,6 +240,20 @@ for _, value in ipairs(workspace:GetDescendants()) do
     end;
 end;
 
+--// anti ragdoll
+
+local Module = require(game:GetService("ReplicatedStorage").Module.AlexRagdoll)
+
+for _, v in pairs({"Ragdoll", "Unragdoll", "IsRagdoll"}) do
+    local old = Module[v]
+    Module[v] = newcclosure(function(...)
+        if dependencies.variables.teleporting then
+            return v == "IsRagdoll" and false or nil
+        end
+        return old and old(...)
+    end)
+end
+
 --// anti skydive
 
 local oldIsFlying = dependencies.modules.paraglide.IsFlying
