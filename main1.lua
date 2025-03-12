@@ -25,7 +25,7 @@ local dependencies = {
         path = pathfinding_service:CreatePath({WaypointSpacing = 3}),
         player_speed = 130, 
         vehicle_speed = 180,
-        teleporting = false,
+        teleporting = true,
         stopVelocity = false
     },
     modules = {
@@ -41,7 +41,7 @@ local dependencies = {
     },
     helicopters = { Heli = true },
     motorcycles = { Volt = true },
-    free_vehicles = { Camaro = true, Jeep = true },
+    free_vehicles = { Camaro = true, Jeep = true, Heli = true },
     unsupported_vehicles = { SWATVan = true },
     door_positions = { }    
 };
