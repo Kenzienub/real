@@ -41,7 +41,7 @@ local dependencies = {
     },
     helicopters = { Heli = true },
     motorcycles = { Volt = true },
-    free_vehicles = { Camaro = true, Jeep = true, Heli = true },
+    free_vehicles = { Camaro = true, Jeep = true },
     unsupported_vehicles = { SWATVan = true },
     door_positions = { }    
 };
